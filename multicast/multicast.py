@@ -2,7 +2,6 @@ import socket
 import struct
 import threading
 import subprocess
-import time
 
 devices = []
 
@@ -10,9 +9,9 @@ devices = []
 
 class _mCastThread (threading.Thread):
 
-	def __init__(self, gui, io, myIP):
+	def __init__(self, guiCallback, io, myIP):
 		threading.Thread.__init__(self)
-		self.gui = gui
+		self.guiCallback = guiCallback
 		self.io = io
 		self.myIP = myIP
 
@@ -22,18 +21,20 @@ class _mCastThread (threading.Thread):
 			nbytes, address = self.io.recvfrom_into(data, 1)
 			if (self.myIP.strip() != address[0].strip()):
 				if (data[0] == 1):
-					newDevice(address[0], self.gui)
+					print "Multicast: Request from ", address
+					newDevice(address[0], self.guiCallback)
 					self.io.sendto(bytearray(1), address)
 				else:
-					newDevice(address[0], self.gui)
+					print "Multicast: Response from ", address
+					newDevice(address[0], self.guiCallback)
 
 # FUNCTIONS
 
-def newDevice(device, gui):
+def newDevice(device, guiCallback):
 	if device not in devices:
 		devices.append(device)
-		print "New device found: " + str(device)
-		gui.newUser(device)
+		print "Multicast: New device found: " + str(device)
+		guiCallback(device)
 
 def _getMyIP():
 	cmd = "ifconfig wlan0| grep 'inet addr' | cut -d: -f2 | awk '{ print $1}'"
@@ -81,15 +82,15 @@ def _createMulticastSocket(MCAST_GROUP, MCAST_PORT):
 	io.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 	return io
 
-def start(MCAST_GROUP, MCAST_PORT, gui):
-	print "Starting multicast..."
+def start(MCAST_GROUP, MCAST_PORT, guiCallback):
+	print "Multicast: Starting multicast..."
 	# Create Multicast UDP Socket
 	io = _createMulticastSocket(MCAST_GROUP, MCAST_PORT)
 	# Get own IP address for filtering own packages from Multicast
 	myIP = _getMyIP()
 	# Start listening to a multicast socket. Set process to its own thread.
-	_mCastThread(gui, io, myIP).start()
-	print "Multicasting in group ", MCAST_GROUP, ", port ", MCAST_PORT
+	_mCastThread(guiCallback, io, myIP).start()
+	print "Multicast: Multicasting in group ", MCAST_GROUP, ", port ", MCAST_PORT
 	# Join multicast group
 	_joinMulticastGroup(MCAST_GROUP, MCAST_PORT)
 
