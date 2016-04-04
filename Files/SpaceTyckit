@@ -1,0 +1,47 @@
+radar - no ID
+seen  - ID given, who saw and who!
+
+hit - ENEMY ID GIVEN!! also own ID
+die - both IDs given
+detected - ID of who has been detected
+
+
+1. start - radar
+
+	a. if more than 1 targets radared the same time?
+
+		- save all locations
+
+	b. start attacking one
+		1. if miss, scan one of the three possibilities
+		2. if hit, scan one of the shot spots and scan 2 random places
+
+2. enemy found - attack
+
+	a. how to keep the target???
+
+3. enemy destroyed
+
+	a. check all detected!
+
+	b. all scan separate targets that's been seen before
+
+4. if found, return to step 2.
+
+5. if not found, return to step 1.
+
+
+
+Our ship detected/seen/hit
+
+1. Evade always at least 2 times after the last time been seen
+	a. if Evades ok. No hits/detects. Go back to other tasks.
+	
+	b. else if we see someone while evading
+		1. Restart evade, Store bot seen to our known targets
+
+	c. else we are still targeted by something, restart evade move
+
+	d. (Maybe if 1v1 situation and known attacker, let's not give a fuck and just attack back)
+		Here if we have a lot of HP might be good to just attack instead of evade.
+		Although, evade gives us always a chance to escape!

@@ -106,5 +106,5 @@ class GUI():
 		self.files.insert(END, str(newF))
 
 	def start(self):
-		# Start mainloop
+		# Launch GUI
 		mainloop()	
